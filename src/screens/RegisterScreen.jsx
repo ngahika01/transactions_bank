@@ -51,6 +51,7 @@ const RegisterScreen = () => {
         };
         await setDoc(doc(db,'users',userId), userData);
       }
+      navigate("/");
     } catch (error) {
       setError(error.message);
       
