@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Button } from "react-bootstrap";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "././App.css";
+import { UserAuthContextProvider } from "./context/UserAuthContext";
+import AdminPage from "./screens/AdminPage";
+import CreateAccount from "./screens/CreateAccount";
+import Depost from "./screens/Depost";
+import EditProfileScreen from "./screens/EditProfileScreen";
+import Home from "./screens/Home";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
+import WithDraw from "./screens/WithDraw";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UserAuthContextProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/login" element={<LoginScreen />} />
+          <Route path="/register" element={<RegisterScreen />} />
+          <Route path="/edit" element={<EditProfileScreen />} />
+          <Route path="/create" element={<CreateAccount />} />
+          <Route path="/deposit/:id" element={<Depost />} />
+          <Route path="/withdraw/:id" element={<WithDraw />} />
+        </Routes>
+      </Router>
+    </UserAuthContextProvider>
   );
-}
+};
 
 export default App;
