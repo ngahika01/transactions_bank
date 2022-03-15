@@ -1,6 +1,6 @@
 import { async } from "@firebase/util";
 import { getAuth } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -21,11 +21,21 @@ const CreateAccount = () => {
   const accounstRef = collection(db, "accounts");
   const [error, setError] = useState("");
   const [user, setUser] = useState("");
+  const [accounts, setAccounts] = useState([]);
 
-  const  auth = getAuth();
+  const auth = getAuth();
   useEffect(() => {
     const getUser = async () => {
       const user = auth.currentUser;
+      const q = await query(accounstRef, where("user", "==", user.uid));
+      const data = await getDocs(q);
+      setAccounts(
+        data.docs.map((doc) => ({
+          ...doc.data(where("user", "==", user.uid)),
+          id: doc.id,
+        }))
+      );
+
       if (user !== null) {
         // The user object has basic properties such as display name, email, etc.
         setUser(user.uid);
@@ -34,11 +44,19 @@ const CreateAccount = () => {
     };
     getUser();
   }, [user]);
+  console.log(accounts.length + " accounts");
 
   const navigate = useNavigate();
   const createAccount = async (e) => {
     e.preventDefault();
     setError("");
+    // get number of accounts for user and limit to 5
+    if (accounts.length >= 5) {
+      setError("You can only have 5 accounts");
+      alert("You can only have 5 accounts");
+      return;
+    }
+
     try {
       await addDoc(accounstRef, {
         name,

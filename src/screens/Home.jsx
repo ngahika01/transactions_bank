@@ -43,6 +43,39 @@ const Home = () => {
     fetchData();
   }, [user, accountsRef]);
 
+  //get all users
+  const usersRef = collection(db, "users");
+  const [users, setUsers] = React.useState([]);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+
+  useEffect(() => {
+    if (auth === null) {
+      navigate("/login");
+    }
+    const fetchData = async () => {
+      const data = await getDocs(usersRef);
+      setUsers(
+        data.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }))
+      );
+    };
+
+    fetchData();
+    
+  }, [navigate, auth]);
+  //check current user if is admin
+  useEffect(() => {
+    if (users) {
+      users.forEach((user) => {
+        if (user.id === auth.currentUser.uid && user.isAdmin === true) {
+          setIsAdmin(true);
+        }
+      });
+    }
+  }, [users]);
+
   const logoutUser = () => {
     logout();
 
@@ -100,6 +133,15 @@ const Home = () => {
                 <Button onClick={() => navigate("/edit")} variant="primary">
                   Edit Profile
                 </Button>
+                {isAdmin && (
+                  <Button
+                    className="m-4"
+                    onClick={() => navigate("/admin")}
+                    variant="primary"
+                  >
+                    Admin Panel
+                  </Button>
+                )}
               </Card.Text>
               <Card.Text>
                 <Button onClick={logoutUser} variant="danger">
@@ -121,7 +163,7 @@ const Home = () => {
                   Open a new Account
                 </Button>
                 <h5>My accounts</h5>
-                <Table striped bordered hover>
+                <Table striped bordered hover responsive>
                   <thead>
                     <tr>
                       <th>#</th>

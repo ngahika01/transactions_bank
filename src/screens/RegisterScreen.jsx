@@ -39,6 +39,7 @@ const RegisterScreen = () => {
       return;
     }
     setError("");
+    
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
 
